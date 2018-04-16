@@ -6,15 +6,23 @@
 #include<map>
 using namespace std;
 
-#define DATA "data1.txt"
+//#define DATA "data1.txt"
+//#define DATA "w.csv"
+//#define DATA "data2.txt"
+#define DATA "bank.txt"
 //#define ROW row
 #define COLUMN 5 //for bank.txt
+//#define COLUMN 12 //for w.csv
 #define MAXNODE 1000000
 //double **dataset;
 struct data{
     vector<double>rowData;
 };
 vector<data> dataset;
+//vector<data> trainingDataset;
+vector<data> testDataset;
+
+
 string *header;
 
 struct Node{
@@ -160,7 +168,17 @@ void cleanUpString(string &str){
         if(str[i]==',') str[i] = ' ';
 }
 
-void selectTrainDataRandomly(){
+void selectTrainDataRandomly(vector<data> &dataset,vector<data> &testDataset){
+    int totSize = dataset.size();
+    totSize = totSize*2;
+    totSize = totSize/10;
+
+    while(totSize--){
+        int value = rand() % dataset.size();
+        testDataset.push_back(dataset[value]);
+        dataset.erase(dataset.begin()+value);
+        cout<<value<<endl;
+    }
 
 }
 
@@ -202,8 +220,9 @@ void readFile(){
 int main() {
     readFile();
 
-    selectTrainDataRandomly();
-
+    selectTrainDataRandomly(dataset,testDataset);
+   cout<<"Now new size of dataset : "<<dataset.size()<<endl;
+   cout<<"Now size of test dataset : "<<testDataset.size()<<endl;
     /*for(int i=0;i<COLUMN;i++)
         cout<<header[i]<<" * ";
     cout<<endl;
@@ -219,11 +238,18 @@ int main() {
     cout<<"Height of the tree: "<<treeHeight<<endl;
       //cout<<"************"<<endl;
     int result=-1;
-    for(int i=0;i<40;i++){
-        result=checkDecision(0,dataset[i]);
-        cout<<"Test No "<<i+1<<":\n";
+    int correctCt=0;
+    for(int i=0;i<testDataset.size();i++){
+        result=checkDecision(0,testDataset[i]);
+        cout<<"### Test No "<<i+1<<":\n";
         cout<<"Test decision: "<<result<<endl;
-        cout<<"Actual decision: "<<dataset[i].rowData[COLUMN-1] <<endl;
+        cout<<"Actual decision: "<<(int)testDataset[i].rowData[COLUMN-1] <<endl;
+        cout<<endl;
+        if(result==testDataset[i].rowData[COLUMN-1]) correctCt++;
     }
+    cout<<"Total test: "<< testDataset.size() <<endl;
+    cout<<"Total correct result: "<< correctCt <<endl;
+    cout<<"accuracy : "<<(double)correctCt/(double)testDataset.size()<<endl;
+    //int t = getchar();
 
 }
