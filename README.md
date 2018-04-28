@@ -1,3 +1,3 @@
 # SPL1
 
-Not complete yet
+Not completed yet
