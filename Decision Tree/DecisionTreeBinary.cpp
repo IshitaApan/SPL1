@@ -61,13 +61,13 @@ double calculateFeatureEntropy(double element,int col,vector<data>dataset){
     }
 
     double leftEntropy = 0.0, rightEntropy = 0.0;
-    for(auto it = leftDataset.begin(); it != leftDataset.end(); it++){
+    for(map<int,int>:: iterator it = leftDataset.begin(); it != leftDataset.end(); it++){
         leftEntropy += (double) calculateTableEntropy(it -> second, leftDataCt);
     }
     leftEntropy *= leftDataCt;
     leftEntropy /= (double)dataset.size();
 
-    for(auto it = rightDataset.begin(); it != rightDataset.end(); it++){
+    for(map<int,int>:: iterator it = rightDataset.begin(); it != rightDataset.end(); it++){
         rightEntropy += (double) calculateTableEntropy(it -> second, rightDataCt);
     }
     rightEntropy *= rightDataCt;
@@ -96,7 +96,7 @@ void makeTreeRecursively(int nodeNo,int nodeLevel,vector<data>dataset){
         }
     }
 
-    for(auto it = decisions.begin();it!=decisions.end();it++){
+    for(map<int,int> :: iterator it = decisions.begin();it!=decisions.end();it++){
         //cout<<"Class: "<<it->first<<" "<<it->second<<endl;
         totalEntropy += calculateTableEntropy(it->second, dataset.size());
     }
@@ -177,7 +177,7 @@ void selectTrainDataRandomly(vector<data> &dataset,vector<data> &testDataset){
         int value = rand() % dataset.size();
         testDataset.push_back(dataset[value]);
         dataset.erase(dataset.begin()+value);
-        cout<<value<<endl;
+        //cout<<value<<endl;
     }
 
 }
@@ -220,9 +220,10 @@ void readFile(){
 int main() {
     readFile();
 
-    selectTrainDataRandomly(dataset,testDataset);
-   cout<<"Now new size of dataset : "<<dataset.size()<<endl;
-   cout<<"Now size of test dataset : "<<testDataset.size()<<endl;
+	selectTrainDataRandomly(dataset,testDataset);
+	cout<<"Size of training dataset : "<<dataset.size()<<endl;
+	cout<<"Size of test dataset : "<<testDataset.size()<<endl;
+	cout<<"******************************"<<endl;
     /*for(int i=0;i<COLUMN;i++)
         cout<<header[i]<<" * ";
     cout<<endl;
@@ -234,22 +235,23 @@ int main() {
     } */
 
     makeTreeRecursively(0,0,dataset);
-    cout<<"Total nodes of the tree: "<<nodeCt<<endl;
     cout<<"Height of the tree: "<<treeHeight<<endl;
-      //cout<<"************"<<endl;
+    cout<<"Total nodes of the tree: "<<nodeCt<<endl;
+	cout<<"******************************"<<endl;
     int result=-1;
     int correctCt=0;
     for(int i=0;i<testDataset.size();i++){
         result=checkDecision(0,testDataset[i]);
-        cout<<"### Test No "<<i+1<<":\n";
+        /*cout<<"### Test No "<<i+1<<":\n";
         cout<<"Test decision: "<<result<<endl;
         cout<<"Actual decision: "<<(int)testDataset[i].rowData[COLUMN-1] <<endl;
-        cout<<endl;
+        cout<<endl; */
         if(result==testDataset[i].rowData[COLUMN-1]) correctCt++;
     }
     cout<<"Total test: "<< testDataset.size() <<endl;
     cout<<"Total correct result: "<< correctCt <<endl;
-    cout<<"accuracy : "<<(double)correctCt/(double)testDataset.size()<<endl;
-    //int t = getchar();
+    cout<<"Accuracy : "<<(double)correctCt/(double)testDataset.size()<<endl;
+   
 
 }
+
