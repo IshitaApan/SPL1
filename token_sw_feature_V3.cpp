@@ -46,11 +46,15 @@ int main(){
 		}
 	}
 	iFile.close();
+
+
+	vector< vector<string> > documentCollection;  //whole document
 	vector <string> tokens;
 	//ifstream inputFile;
-	iFile.open("sample_dev0.txt");
+	iFile.open("Eclipse_summary.csv");
 	//string lines,words;
     //string lines;
+	int row = 0;
 	while(getline(iFile,line)){
 		//cout<<line<<endl;
 		cleanUp(line);
@@ -61,56 +65,85 @@ int main(){
 			//cout<<word<<endl;
 			tokens.push_back(word);
 
-
 		}
+		documentCollection.push_back(tokens);
+//tokens destroyed
+		tokens.clear();
 
 	}
 	iFile.close();
 
 	vector<string> :: iterator it;
 	vector<string> :: iterator it2;
-    cout<<"check"<<endl;
-    //int ct=0;
-	for(it = tokens.begin(); it!=tokens.end(); it++){
-		for(it2=stopWordList.begin(); it2!=stopWordList.end(); it2++){
-			if(*it == *it2){
-				//cout<<ct++<<*it<<endl;
-				tokens.erase(it);
-				it--;
-				//break;
+    cout<<"check "<<documentCollection.size()<<endl;
+    int ct=0;
+	for(int rw=0; rw<documentCollection.size(); rw++ ){
+		for(it = documentCollection[rw].begin(); it!=documentCollection[rw].end(); it++){
+			for(it2=stopWordList.begin(); it2!=stopWordList.end(); it2++){
+				if(*it == *it2){
+					documentCollection[rw].erase(it);
+					it--;
+				}
 			}
 		}
+
 	}
+
+
 	cout<<"\nfile word list after removing stopWord"<<endl;
 	map< string, int> frequencyMap;
-	for(it = tokens.begin(); it!=tokens.end(); it++){
-		frequencyMap[*it]++;		
-			//cout<<*it<<"		";
+	map< string, int > tempFreq;
+	vector< map<string,int> > rowMap;
+
+	for(int rw=0;rw<documentCollection.size();rw++) {
+		for(it = documentCollection[rw].begin(); it!=documentCollection[rw].end(); it++){
+			frequencyMap[*it]++;
+			tempFreq[*it]++;
+		}
+        rowMap.push_back(tempFreq);
+        tempFreq.clear();
 	}
+
 //*********************************************************************
-	mapSorter mS;	
-	vector<mapSorter> feature;
+	mapSorter mS;
+	vector<mapSorter> featureSort;
 	for(map<string,int>::iterator i=frequencyMap.begin(); i != frequencyMap.end(); i++) {
 		//cout<<i->first<<"	"<<i->second<<endl;
 		mS.word = i->first;
 		mS.frequency = i->second;
-		feature.push_back(mS);
+		featureSort.push_back(mS);
 
 	}
 
-	sort(feature.begin(),feature.end(), sortingRule );
+	sort(featureSort.begin(),featureSort.end(), sortingRule );
 
 
 // Feature selection
 
 
-cout<<"******************************************"<<endl<<endl;
-	int ct = 1;
-	for(vector<mapSorter>::iterator i=feature.begin() ; i!=feature.end() ; i++){
+    cout<<"******************************************"<<endl<<endl;
 
-		cout<<ct++<<". "<<(*i).word<<" : "<<(*i).frequency<<endl;
+	vector<string> feature1000;//features
+
+
+	ct = 1;
+	for(vector<mapSorter>::iterator i=featureSort.begin() ; i!=(featureSort.begin()+100) ; i++){
+
+		//cout<<ct++<<". "<<(*i).word<<" : "<<(*i).frequency<<endl;
+		feature1000.push_back( (*i).word );
 	}
-	
+
+    for(int rw=0;rw<documentCollection.size();rw++){
+        cout<<rw+1<<": "<<endl;
+        for(vector<string>::iterator it = feature1000.begin(); it!=feature1000.end(); it++){
+            //cout<< *it <<":"<<rowMap[rw][*it]<<" ";
+            cout<<rowMap[rw][*it]<<" ";
+        }
+        cout<<endl;
+    }
+
+
+
 
 
 }
