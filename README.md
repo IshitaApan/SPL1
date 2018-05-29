@@ -1,3 +1,5 @@
 # SPL1
 
-Not completed yet
+Decision Tree implementation
+Impurity Measurements by Entropy & Gini Index calculation
+Bug severity Classification using Decision Tree
